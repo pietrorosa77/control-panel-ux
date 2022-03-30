@@ -59,6 +59,7 @@ export const stripeCheckout = async (
     body: JSON.stringify({
       priceId,
       users,
+      success_url: `http://localhost:9000/subscription`,
     }),
     headers: {
       Authorization: `Bearer ${token}`,
