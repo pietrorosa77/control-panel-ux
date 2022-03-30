@@ -2,7 +2,7 @@ import { Box, Heading, Paragraph } from "grommet";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import protectRoute from "./ProtectedRoute";
 
-const SubscriptionPage = (props: any) => {
+const SubscriptionPage = () => {
   return (
     <ErrorBoundary>
       <Box fill background="neutral-3">

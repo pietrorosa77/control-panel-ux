@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Box, Button, Heading, Paragraph } from "grommet";
+import { Box, Button, Heading } from "grommet";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import protectRoute from "./ProtectedRoute";
 import { callPing, callProtectedPing } from "../api";
@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Loader } from "../components/Loading";
 import ReactJson from "react-json-view";
 
-const HomePage = (props: any) => {
+const HomePage = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [result, setResult] = useState<any>();
   const [loading, setLoading] = useState(false);

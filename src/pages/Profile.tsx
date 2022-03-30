@@ -5,7 +5,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { Loader } from "../components/Loading";
 import protectRoute from "./ProtectedRoute";
 
-const ProfilePage = (props: any) => {
+const ProfilePage = () => {
   const { isLoading, user } = useAuth0();
   return (
     <ErrorBoundary>

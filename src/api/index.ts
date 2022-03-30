@@ -36,3 +36,35 @@ export const callProtectedPing = async (token: string) => {
 
   return await checkResponse(response);
 };
+
+//
+export const loadPricing = async (token: string) => {
+  const response = await fetch(`${APIROOT}/stripe/current-pricing`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return await checkResponse(response);
+};
+
+export const stripeCheckout = async (
+  priceId: string,
+  users: number,
+  token: string
+) => {
+  const response = await fetch(`${APIROOT}/stripe/create-checkout-session`, {
+    method: "POST",
+    body: JSON.stringify({
+      priceId,
+      users,
+    }),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return await checkResponse(response);
+};
