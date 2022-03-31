@@ -59,7 +59,7 @@ export const ConsoleHeader = () => {
   return (
     <Header background="brand" pad="medium" height={HeaderHeight}>
       <Box direction="row" align="center" gap="small">
-        <Heading level={1} size="medium">
+        <Heading level={1} size="small">
           Control Panel
         </Heading>
       </Box>
