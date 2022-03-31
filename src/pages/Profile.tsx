@@ -11,7 +11,7 @@ const ProfilePage = () => {
     <ErrorBoundary>
       <Box fill background="neutral-3">
         <Box style={{ alignItems: "center" }} alignSelf="center">
-          <Heading size="large" level={1}>
+          <Heading size="medium" level={2}>
             Profile Page
           </Heading>
           <Box>
@@ -22,7 +22,7 @@ const ProfilePage = () => {
                 name="user properties"
                 enableClipboard={false}
                 style={{ width: "100%" }}
-                src={user!}
+                src={user || {}}
                 theme="monokai"
               />
             )}

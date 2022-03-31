@@ -11,11 +11,13 @@ import {
   RangeInput,
   Text,
 } from "grommet";
-import { Cart, Code, ServerCluster, User } from "grommet-icons";
+import { Cart, Code, ServerCluster, Stripe, User } from "grommet-icons";
 import { useEffect, useState } from "react";
-import { loadPricing, stripeCheckout } from "../api";
+import { useNavigate } from "react-router-dom";
+import { getSubscription, loadPricing, stripeCheckout } from "../api";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { CenteredLoader } from "../components/Loading";
+import { StyledButton } from "../components/NavLinks";
 import protectRoute from "./ProtectedRoute";
 
 interface IPriceItem {
@@ -42,11 +44,13 @@ const Identifier = ({ children, title, subTitle, size, ...rest }: any) => (
 
 const PricingPage = () => {
   const { getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate();
   const [result, setResult] = useState<IPriceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(false);
   const [selectedPrice, setSelectedPrice] = useState<IPriceItem>();
   const [users, setUsers] = useState<number>(1);
+  const [sub, setSub] = useState<any>();
 
   useEffect(() => {
     onLoadPricing();
@@ -60,6 +64,13 @@ const PricingPage = () => {
     try {
       const tkn = await getAccessTokenSilently();
       const result = await loadPricing(tkn);
+      try {
+        const subsc = await getSubscription(tkn);
+        setSub(subsc);
+      } catch (error) {
+        setSub(undefined);
+      }
+
       const res: IPriceItem[] = result.data.map((el: any) => ({
         id: el.id,
         interval: el.recurring.interval,
@@ -108,20 +119,40 @@ const PricingPage = () => {
     <ErrorBoundary>
       <Box fill background="neutral-3">
         <Box style={{ alignItems: "center" }} alignSelf="center">
-          <Heading size="large" level={2}>
-            Select the pricing type
+          <Heading size="medium" level={2}>
+            Pricing Plan
           </Heading>
           {loading && <CenteredLoader themeColor="white" size={100} />}
           {error && (
             <Box pad="medium" background="brand">
-              <Notification
-                status="critical"
-                title="Error loading pricing"
-                message="There was an error while loading pricing items"
-              />
+              <Box gap="small">
+                <Notification
+                  status="critical"
+                  title="Error loading pricing"
+                  message="There was an error while loading pricing items"
+                />
+              </Box>
             </Box>
           )}
-          {result.length > 0 && (
+          {sub && (
+            <Box pad="medium" height="100%" background="brand" round>
+              <Box pad="medium" background="brand">
+                <Box gap="small">
+                  <Notification
+                    status="normal"
+                    title="You already have a subscription"
+                    message="Please check the details of your subscription into the subscription page"
+                  />
+                  <StyledButton
+                    label="Subscription"
+                    icon={<Stripe />}
+                    onClick={() => navigate("/Subscription")}
+                  ></StyledButton>
+                </Box>
+              </Box>
+            </Box>
+          )}
+          {!sub && result.length > 0 && (
             <Box pad="medium" height="100%" background="brand" round>
               <Grid gap="medium" columns={{ count: "fit", size: "small" }}>
                 {result.map((value) => (
@@ -156,7 +187,7 @@ const PricingPage = () => {
                   </Card>
                 ))}
               </Grid>
-              {selectedPrice && (
+              {!sub && selectedPrice && (
                 <Box>
                   <Box direction="row" align="center" gap="small" pad="medium">
                     <User color="accent-1" />

@@ -43,7 +43,12 @@ const SiteTheme = deepMerge(grommet, {
 const App = () => {
   return (
     <ErrorBoundary>
-      <Grommet full theme={SiteTheme}>
+      <Grommet
+        full
+        theme={SiteTheme}
+        style={{ overflowY: "auto" }}
+        background="neutral-3"
+      >
         <Router>
           <Auth0ProviderWithHistory>
             <ConsoleHeader />
