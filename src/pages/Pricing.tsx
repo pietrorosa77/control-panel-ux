@@ -118,13 +118,16 @@ const PricingPage = () => {
   return (
     <ErrorBoundary>
       <Box fill background="neutral-3">
-        <Box style={{ alignItems: "center" }} alignSelf="center">
+        <Box
+          style={{ alignItems: "center", minHeight: "unset" }}
+          alignSelf="center"
+        >
           <Heading size="medium" level={2}>
             Pricing Plan
           </Heading>
           {loading && <CenteredLoader themeColor="white" size={100} />}
           {error && (
-            <Box pad="medium" background="brand">
+            <Box pad="medium" background="brand" style={{ minHeight: "unset" }}>
               <Box gap="small">
                 <Notification
                   status="critical"
@@ -135,7 +138,13 @@ const PricingPage = () => {
             </Box>
           )}
           {sub && (
-            <Box pad="medium" height="100%" background="brand" round>
+            <Box
+              pad="medium"
+              height="100%"
+              background="brand"
+              round
+              style={{ minHeight: "unset" }}
+            >
               <Box pad="medium" background="brand">
                 <Box gap="small">
                   <Notification
@@ -153,8 +162,14 @@ const PricingPage = () => {
             </Box>
           )}
           {!sub && result.length > 0 && (
-            <Box pad="medium" height="100%" background="brand" round>
-              <Grid gap="medium" columns={{ count: "fit", size: "small" }}>
+            <Box
+              pad="medium"
+              width="100%"
+              background="brand"
+              round
+              style={{ minHeight: "unset" }}
+            >
+              <Grid gap="small" columns={{ count: "fill", size: "small" }}>
                 {result.map((value) => (
                   <Card
                     border={{
@@ -188,10 +203,16 @@ const PricingPage = () => {
                 ))}
               </Grid>
               {!sub && selectedPrice && (
-                <Box>
-                  <Box direction="row" align="center" gap="small" pad="medium">
+                <Box style={{ minHeight: "unset" }}>
+                  <Box
+                    direction="row"
+                    align="center"
+                    gap="small"
+                    pad="medium"
+                    style={{ minHeight: "unset" }}
+                  >
                     <User color="accent-1" />
-                    <Box align="center" width="small">
+                    <Box fill>
                       <RangeInput
                         min={1}
                         max={1000}
@@ -201,15 +222,17 @@ const PricingPage = () => {
                           setUsers(Number(e.currentTarget.value));
                         }}
                       />
-                    </Box>{" "}
+                    </Box>
                   </Box>
-                  <Box direction="row" gap="small">
-                    Total price for <Text color="accent-1">{users}</Text> users
-                    is{" "}
-                    <Text color="accent-1">
-                      {getTotal(selectedPrice.unit_amount, users)}{" "}
-                      {selectedPrice.currency}
-                    </Text>
+                  <Box gap="small" style={{ minHeight: "unset" }}>
+                    <Box direction="row" gap="small">
+                      Total price for <Text color="accent-1">{users}</Text>
+                      users is
+                      <Text color="accent-1">
+                        {getTotal(selectedPrice.unit_amount, users)}{" "}
+                        {selectedPrice.currency}
+                      </Text>
+                    </Box>
                     <Button
                       label="checkout"
                       onClick={checkout}

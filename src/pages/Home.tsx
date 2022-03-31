@@ -60,51 +60,75 @@ const HomePage = () => {
   return (
     <ErrorBoundary>
       <Box fill background="neutral-3">
-        <Box style={{ alignItems: "center" }} alignSelf="center">
+        <Box style={{ alignItems: "center" }} alignSelf="center" pad="medium">
           <Heading size="medium" level={2}>
-            HomePage
+            Control Panel test project
           </Heading>
-          <Box gap="small" direction="row">
-            <Button
-              onClick={callPingClick}
-              disabled={loading}
-              label="Call Ping"
-            ></Button>
-            <Button
-              onClick={callPingProtectedClickNJoTkn}
-              disabled={loading}
-              label="Call protected Ping WITHOUT auth token "
-            ></Button>
-            <Button
-              onClick={callPingProtectedClick}
-              disabled={loading}
-              label="Call protected Ping with auth token "
-            ></Button>
+          <Box
+            background="brand"
+            pad="large"
+            round
+            width="100%"
+            style={{ minHeight: "unset" }}
+          >
+            This simple console aims to be a POC to show the integration with a
+            third party auth service (auth0) and a third party subscription /
+            payment management service (stripe). The front end uses React with
+            Grommet components and Vite.js build. Back end api are written in
+            nodejs with Fastify.
           </Box>
-          <Box gap="small" direction="row" pad="small">
-            {loading && <Loader themeColor="neutral-3"></Loader>}
-            {result && (
-              <Box fill background="status-ok" pad="large">
-                <ReactJson
-                  name="user properties"
-                  enableClipboard={false}
-                  style={{ width: "100%" }}
-                  src={result}
-                  theme="monokai"
-                />
-              </Box>
-            )}
-            {error && (
-              <Box background="status-error" pad="large">
-                <ReactJson
-                  name="user properties"
-                  enableClipboard={false}
-                  style={{ width: "100%" }}
-                  src={{ error: error.message }}
-                  theme="monokai"
-                />
-              </Box>
-            )}
+          <Box
+            margin={{ top: "1rem" }}
+            background="neutral-2"
+            pad="large"
+            round
+            width="100%"
+            style={{ minHeight: "unset" }}
+          >
+            Simple test calling Api with or without jwt token obtained from
+            Auth0
+            <Box gap="small">
+              <Button
+                onClick={callPingClick}
+                disabled={loading}
+                label="Call Ping"
+              ></Button>
+              <Button
+                onClick={callPingProtectedClickNJoTkn}
+                disabled={loading}
+                label="Call protected Ping WITHOUT auth token "
+              ></Button>
+              <Button
+                onClick={callPingProtectedClick}
+                disabled={loading}
+                label="Call protected Ping with auth token "
+              ></Button>
+            </Box>
+            <Box gap="small" direction="row" pad="small">
+              {loading && <Loader themeColor="neutral-3"></Loader>}
+              {result && (
+                <Box fill background="status-ok" pad="large">
+                  <ReactJson
+                    name="user properties"
+                    enableClipboard={false}
+                    style={{ width: "100%" }}
+                    src={result}
+                    theme="monokai"
+                  />
+                </Box>
+              )}
+              {error && (
+                <Box background="status-error" pad="large">
+                  <ReactJson
+                    name="user properties"
+                    enableClipboard={false}
+                    style={{ width: "100%" }}
+                    src={{ error: error.message }}
+                    theme="monokai"
+                  />
+                </Box>
+              )}
+            </Box>
           </Box>
         </Box>
       </Box>
