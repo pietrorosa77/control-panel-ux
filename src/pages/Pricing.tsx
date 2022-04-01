@@ -11,13 +11,11 @@ import {
   RangeInput,
   Text,
 } from "grommet";
-import { Cart, Code, ServerCluster, Stripe, User } from "grommet-icons";
+import { Cart, Code, ServerCluster, User } from "grommet-icons";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { getSubscription, loadPricing, stripeCheckout } from "../api";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { CenteredLoader } from "../components/Loading";
-import { StyledButton } from "../components/NavLinks";
 import protectRoute from "./ProtectedRoute";
 
 interface IPriceItem {
@@ -44,7 +42,6 @@ const Identifier = ({ children, title, subTitle, size, ...rest }: any) => (
 
 const PricingPage = () => {
   const { getAccessTokenSilently } = useAuth0();
-  const navigate = useNavigate();
   const [result, setResult] = useState<IPriceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(false);
@@ -65,8 +62,19 @@ const PricingPage = () => {
       const tkn = await getAccessTokenSilently();
       const result = await loadPricing(tkn);
       try {
-        const subsc = await getSubscription(tkn);
+        const subsc: any = await getSubscription(tkn);
         setSub(subsc);
+        const subPricing: IPriceItem = {
+          id: subsc.plan.id,
+          interval: subsc.plan.interval,
+          interval_count: subsc.plan.interval_count,
+          desc: subsc.plan.nickname,
+          unit_amount: subsc.plan.amount,
+          currency: subsc.plan.currency,
+          lookup_key: subsc.items.data[0].price.lookup_key,
+        };
+        setSelectedPrice(subPricing);
+        setUsers(subsc.quantity);
       } catch (error) {
         setSub(undefined);
       }
@@ -137,31 +145,7 @@ const PricingPage = () => {
               </Box>
             </Box>
           )}
-          {sub && (
-            <Box
-              pad="medium"
-              height="100%"
-              background="brand"
-              round
-              style={{ minHeight: "unset" }}
-            >
-              <Box pad="medium" background="brand">
-                <Box gap="small">
-                  <Notification
-                    status="normal"
-                    title="You already have a subscription"
-                    message="Please check the details of your subscription into the subscription page"
-                  />
-                  <StyledButton
-                    label="Subscription"
-                    icon={<Stripe />}
-                    onClick={() => navigate("/Subscription")}
-                  ></StyledButton>
-                </Box>
-              </Box>
-            </Box>
-          )}
-          {!sub && result.length > 0 && (
+          {result.length > 0 && (
             <Box
               pad="medium"
               width="100%"
@@ -170,39 +154,44 @@ const PricingPage = () => {
               style={{ minHeight: "unset" }}
             >
               <Grid gap="small" columns={{ count: "fill", size: "small" }}>
-                {result.map((value) => (
-                  <Card
-                    border={{
-                      color:
-                        value.id === selectedPrice?.id ? "accent-1" : undefined,
-                      size: value.id === selectedPrice?.id ? "2px" : undefined,
-                    }}
-                    background="neutral-3"
-                    key={value.id}
-                    hoverIndicator
-                    onClick={() => setSelectedPrice(value)}
-                  >
-                    <CardBody pad="small">
-                      <Identifier
-                        title={value.lookup_key}
-                        subTitle={value.desc}
-                        size="small"
-                      >
-                        {getIcon(value.lookup_key)}
-                      </Identifier>
-                    </CardBody>
-                    <CardFooter
-                      pad={{ horizontal: "medium", vertical: "small" }}
-                      background="brand"
+                {result
+                  .filter((pr) => (sub ? pr.id === sub.plan.id : pr))
+                  .map((value) => (
+                    <Card
+                      border={{
+                        color:
+                          value.id === selectedPrice?.id
+                            ? "accent-1"
+                            : undefined,
+                        size:
+                          value.id === selectedPrice?.id ? "2px" : undefined,
+                      }}
+                      background="neutral-3"
+                      key={value.id}
+                      hoverIndicator
+                      onClick={sub ? () => null : () => setSelectedPrice(value)}
                     >
-                      <Text size="xsmall">{`Price per single user is ${
-                        value.unit_amount / 100
-                      } ${value.currency}`}</Text>
-                    </CardFooter>
-                  </Card>
-                ))}
+                      <CardBody pad="small">
+                        <Identifier
+                          title={value.lookup_key}
+                          subTitle={value.desc}
+                          size="small"
+                        >
+                          {getIcon(value.lookup_key)}
+                        </Identifier>
+                      </CardBody>
+                      <CardFooter
+                        pad={{ horizontal: "medium", vertical: "small" }}
+                        background="brand"
+                      >
+                        <Text size="xsmall">{`Price per single user is ${
+                          value.unit_amount / 100
+                        } ${value.currency}`}</Text>
+                      </CardFooter>
+                    </Card>
+                  ))}
               </Grid>
-              {!sub && selectedPrice && (
+              {selectedPrice && (
                 <Box style={{ minHeight: "unset" }}>
                   <Box
                     direction="row"
@@ -218,9 +207,13 @@ const PricingPage = () => {
                         max={1000}
                         step={1}
                         value={users}
-                        onChange={(e) => {
-                          setUsers(Number(e.currentTarget.value));
-                        }}
+                        onChange={
+                          sub
+                            ? () => setUsers(users)
+                            : (e) => {
+                                setUsers(Number(e.currentTarget.value));
+                              }
+                        }
                       />
                     </Box>
                   </Box>
@@ -233,11 +226,13 @@ const PricingPage = () => {
                         {selectedPrice.currency}
                       </Text>
                     </Box>
-                    <Button
-                      label="checkout"
-                      onClick={checkout}
-                      icon={<Cart />}
-                    ></Button>
+                    {!sub && (
+                      <Button
+                        label="checkout"
+                        onClick={checkout}
+                        icon={<Cart />}
+                      ></Button>
+                    )}
                   </Box>
                 </Box>
               )}
